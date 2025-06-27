@@ -1,41 +1,15 @@
 services:
-
   app:
-    image: my-image:latest
+    image: cyberorca/orca-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: my_app
-    restart: always
-    env_file:
-      - .env
+    restart: unless-stopped
     ports:
       - "80:8000"
     volumes:
-      - app_log_data:/app/storage/logs
-      - public_data:/app/storage/app/public
-    command: php artisan octane:frankenphp
-
-  scheduler:
-    image: my-image:latest
-    container_name: my_scheduler
-    restart: always
-    env_file:
-      - .env
-    volumes:
-      - scheduler_log_data:/app/storage/logs
-    command: php artisan schedule:work
-
-  queue:
-    image: my-image:latest
-    container_name: my_queue
-    restart: always
-    env_file:
-      - .env
-    volumes:
-      - queue_log_data:/app/storage/logs
-    command: php artisan queue:work --timeout=300 --tries=3
-
-
-volumes:
-  app_log_data:
-  public_data:
-  scheduler_log_data:
-  queue_log_data:
+      - .:/app
+    environment:
+      APP_ENV: local
+    command: php artisan octane:start --server=frankenphp --host=0.0.0.0 --port=8000

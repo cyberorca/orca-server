@@ -1,10 +1,16 @@
-FROM ronaregen/php:frankenphp-latest AS main
+FROM dunglas/frankenphp:latest
 
+WORKDIR /app
 
-COPY . /app
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+# Install tools and PHP extensions
+RUN apt-get update && apt-get install -y \
+    git unzip zip libzip-dev \
+    && docker-php-ext-install zip pcntl \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN composer install
+# Set Git to allow mounted repo
+RUN git config --global --add safe.directory /app
 
-RUN chmod +x /usr/local/bin/entrypoint.sh
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+COPY . .
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

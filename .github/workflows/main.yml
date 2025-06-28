@@ -37,4 +37,3 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/laravel-app:latest
             cd /home/cyberorca/dev
             docker compose up -d
-EOF
